@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from backend.config import settings
 from backend.database import get_connection
 from backend.api_clients import sirene, dpe, dvf
+from backend.api_clients.insee import get_departement_market_profile
 from backend.agents.rule_engine import generate_report
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
@@ -72,6 +73,17 @@ async def _rule_based_stream(req: AnalysisRequest):
             pass
         yield evt({"type": "tool_result", "tool": "get_dvf_stats"})
 
+    # INSEE market profiles (population, communes, household estimates)
+    insee_profiles: list[dict] = []
+    for dept in req.departements:
+        yield evt({"type": "tool_call", "tool": "insee_market_profile", "input": {"departement": dept}})
+        try:
+            profile = await get_departement_market_profile(dept)
+            insee_profiles.append(profile)
+        except Exception:
+            pass
+        yield evt({"type": "tool_result", "tool": "insee_market_profile"})
+
     yield evt({"type": "thinking", "text": "Génération du rapport stratégique..."})
 
     report_md = generate_report(
@@ -81,6 +93,7 @@ async def _rule_based_stream(req: AnalysisRequest):
         query=req.query,
         departements=req.departements,
         naf_codes=req.naf_codes,
+        insee_profiles=insee_profiles,
     )
 
     # Save to DB

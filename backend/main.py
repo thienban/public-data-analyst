@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.database import init_db
-from backend.routers import companies, analysis, dpe, dvf
+from backend.routers import companies, analysis, dpe, dvf, insee
 
 app = FastAPI(
     title="Public Data Analyst — Intelligence Économique",
@@ -22,6 +22,7 @@ app.include_router(companies.router)
 app.include_router(analysis.router)
 app.include_router(dpe.router)
 app.include_router(dvf.router)
+app.include_router(insee.router)
 
 
 @app.on_event("startup")

@@ -73,6 +73,7 @@ def generate_report(
     query: str,
     departements: list[str],
     naf_codes: list[str],
+    insee_profiles: list[dict] | None = None,
 ) -> str:
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     dept_str = " · ".join(departements)
@@ -111,6 +112,12 @@ def generate_report(
     total_transactions = dvf_stats.get("total_transactions", 0)
     maisons = dvf_stats.get("maisons", 0)
     indicateur = _renovation_indicator(maisons)
+
+    # INSEE
+    insee_profiles = insee_profiles or []
+    total_population = sum(p.get("population") or 0 for p in insee_profiles)
+    total_menages = sum(p.get("menages_estimes") or 0 for p in insee_profiles)
+    total_potentiel = sum(p.get("potentiel_renovation_annuel") or 0 for p in insee_profiles)
 
     # Opportunity score (0-100)
     opportunity_score = min(
@@ -197,6 +204,40 @@ def generate_report(
             "et l'absence de procédure collective sur BODACC.",
             "",
         ]
+
+    # --- INSEE Market Profile ---
+    if insee_profiles:
+        lines += [
+            "## Données INSEE — Profil de Marché",
+            "",
+            f"Population totale couverte : **{total_population:,}** habitants · "
+            f"**{total_menages:,}** ménages estimés".replace(",", " "),
+            f"Potentiel rénovation annuel estimé : **{total_potentiel:,}** chantiers/an (1,2% du parc)".replace(",", " "),
+            "",
+            "### Communes prioritaires (top population par département)",
+            "",
+        ]
+        for profile in insee_profiles:
+            dept_code = profile.get("departement", "")
+            dept_nom = profile.get("nom", f"Dép. {dept_code}")
+            communes = profile.get("top_communes", [])
+            if communes:
+                lines += [
+                    f"**{dept_nom} ({dept_code})**",
+                    "",
+                    "| Commune | Code INSEE | Population | Ménages est. | Zone cible |",
+                    "|---|---|---|---|---|",
+                ]
+                for i, c in enumerate(communes[:6]):
+                    pop = c.get("population") or 0
+                    menages = c.get("menages_estimes") or 0
+                    priority = "🔴 Priorité 1" if i < 2 else "🟡 Priorité 2" if i < 4 else "🟢 Secondaire"
+                    lines.append(
+                        f"| {c['nom']} | `{c['code_insee']}` | "
+                        f"{pop:,} | {menages:,} | {priority} |".replace(",", " ")
+                    )
+                lines.append("")
+        lines.append("")
 
     # --- AXE 2 : Segmentation Stratégique ---
     lines += [

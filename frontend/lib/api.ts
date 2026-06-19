@@ -75,6 +75,26 @@ export async function getDvfStats(
   return res.json();
 }
 
+export interface InseeProfile {
+  departement: string;
+  nom: string;
+  population: number;
+  menages_estimes: number;
+  potentiel_renovation_annuel: number;
+  top_communes: {
+    nom: string;
+    code_insee: string;
+    population: number;
+    menages_estimes: number;
+  }[];
+}
+
+export async function getInseeProfile(departement: string): Promise<InseeProfile> {
+  const res = await fetch(`${BASE}/insee/profile/${departement}`);
+  if (!res.ok) throw new Error("Erreur INSEE");
+  return res.json();
+}
+
 export async function listReports(): Promise<Report[]> {
   const res = await fetch(`${BASE}/analysis/reports`);
   if (!res.ok) throw new Error("Erreur rapports");

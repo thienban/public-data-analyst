@@ -138,7 +138,7 @@ export default function AnalysisStream({ departements, nafCodes }: Props) {
           <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-700">
             <Zap className="w-4 h-4 text-brand-500" />
             <span className="text-sm font-medium text-slate-300">
-              Rapport d&apos;analyse stratégique
+              Rapport d&apos;analyse de marché
             </span>
           </div>
           <div
