@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.prose-dark {
+  @apply text-slate-200;
+}
+
+.prose-dark h1, .prose-dark h2, .prose-dark h3 {
+  @apply text-white font-semibold mt-6 mb-2;
+}
+
+.prose-dark h1 { @apply text-2xl; }
+.prose-dark h2 { @apply text-xl border-b border-slate-700 pb-1; }
+.prose-dark h3 { @apply text-lg; }
+
+.prose-dark table {
+  @apply w-full border-collapse text-sm mt-4 mb-4;
+}
+.prose-dark th {
+  @apply bg-slate-700 text-white px-3 py-2 text-left;
+}
+.prose-dark td {
+  @apply border border-slate-700 px-3 py-1.5 text-slate-300;
+}
+.prose-dark tr:nth-child(even) td {
+  @apply bg-slate-800/50;
+}
+.prose-dark ul { @apply list-disc list-inside mt-2 mb-2 space-y-1 text-slate-300; }
+.prose-dark li { @apply ml-2; }
+.prose-dark p { @apply mb-3 leading-relaxed; }
+.prose-dark code {
+  @apply bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+.prose-dark pre {
+  @apply bg-slate-900 border border-slate-700 rounded p-4 my-4 overflow-x-auto;
+}
+.prose-dark pre code {
+  @apply bg-transparent p-0 text-emerald-300;
+}
+.prose-dark strong { @apply text-white font-semibold; }
+.prose-dark blockquote {
+  @apply border-l-4 border-brand-500 pl-4 italic text-slate-400 my-4;
+}
